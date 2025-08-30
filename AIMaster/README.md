@@ -189,6 +189,57 @@ curl "http://localhost:8080/api/decks?token=token-<id>-<ts>"
 - SQL models live in `app/models.py` (`Deck`, `Routine`) and extend the FAB user model with a `credits` column.
 - A duplicate GET `/api/user/credits` exists via FAB view in `app/views.py`; for token-based auth, prefer the blueprint version.
 
+## Actuar (Public Broadcast)
+
+- POST `/api/actuar` (auth required): Save latest text for the current user.
+  - Body: `{ "text": "your message" }`
+  - Side effects: writes a static file at `/static/actuar/<username>.html` containing the latest text.
+  - Response includes the public static URL.
+- GET `/api/actuar/<username>` (public): Returns the latest text for `username` in JSON.
+  - Response: `{ "username": "...", "text": "...", "updated_at": "..." }`
+  - The static HTML is served from `/static/actuar/<username>.html`.
+
+### Actuar Usage Example
+
+1) Register a user (or use an existing one):
+
+```
+curl -s -X POST http://localhost:8080/api/register \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"alice@example.com","password":"pass1234"}'
+```
+
+2) Login and capture token:
+
+```
+TOKEN=$(curl -s -X POST http://localhost:8080/api/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"alice@example.com","password":"pass1234"}' | jq -r .token)
+```
+
+3) Post new actuar text (auth required):
+
+```
+curl -s -X POST http://localhost:8080/api/actuar \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: ${TOKEN}" \
+  -d '{"text":"Live update from Alice!"}'
+```
+
+Response will include a field `static.url` such as `/static/actuar/alice@example.com.html`.
+
+4) Public JSON access (no auth):
+
+```
+curl -s http://localhost:8080/api/actuar/alice@example.com
+```
+
+5) Public static HTML access (no auth):
+
+```
+open http://localhost:8080/static/actuar/alice@example.com.html
+```
+
 ## Public Config Endpoint
 
 ### GET `/api/config`
@@ -220,3 +271,17 @@ curl "http://localhost:8080/api/decks?token=token-<id>-<ts>"
   - Logout and verify 401 on subsequent call
   - Sends CORS preflight (OPTIONS) before mutating requests and prints CORS headers of interest
 - 500 JSON: `{ "error": string }`
+
+## Testing
+
+- Run unit tests with the built-in test runner:
+
+```
+python -m unittest -v
+```
+
+- The Actuar flow test covers:
+  - Register + Login
+  - POST `/api/actuar` to save text and write static HTML
+  - GET `/api/actuar/<username>` to fetch public JSON
+  - GET the static HTML to verify latest content

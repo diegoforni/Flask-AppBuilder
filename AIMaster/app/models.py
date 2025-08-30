@@ -60,3 +60,19 @@ class Routine(Model):
             'created_at': self.created_at.isoformat(),
             'last_run_at': self.last_run_at.isoformat() if self.last_run_at else None
         }
+
+# Store the latest "actuar" text per user
+class Actuar(Model):
+    __tablename__ = 'actuar'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('ab_user.id'), nullable=False, unique=True)
+    text = Column(Text, nullable=False, default="")
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    def to_dict(self, username: str = None):
+        return {
+            'user_id': self.user_id,
+            'username': username,
+            'text': self.text,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+        }

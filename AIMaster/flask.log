@@ -1,0 +1,225 @@
+/home/ubuntu/.local/lib/python3.8/site-packages/flask_sqlalchemy/__init__.py:872: FSADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True or False to suppress this warning.
+  warnings.warn(FSADeprecationWarning(
+2025-08-30 03:11:54,471:INFO:flask_appbuilder.base:Registering class IndexView on menu 
+2025-08-30 03:11:54,471:INFO:flask_appbuilder.baseviews:Registering route / ('GET',)
+2025-08-30 03:11:54,475:INFO:flask_appbuilder.base:Registering class UtilView on menu 
+2025-08-30 03:11:54,476:INFO:flask_appbuilder.baseviews:Registering route /back ('GET',)
+2025-08-30 03:11:54,477:INFO:flask_appbuilder.base:Registering class LocaleView on menu 
+2025-08-30 03:11:54,477:INFO:flask_appbuilder.baseviews:Registering route /lang/<string:locale> ('GET',)
+2025-08-30 03:11:54,479:INFO:flask_appbuilder.base:Registering class SecurityApi on menu 
+2025-08-30 03:11:54,479:INFO:flask_appbuilder.api:Registering route /api/v1/security/login ['POST']
+2025-08-30 03:11:54,479:INFO:flask_appbuilder.api:Registering route /api/v1/security/refresh ['POST']
+2025-08-30 03:11:54,481:INFO:flask_appbuilder.base:Registering class ResetPasswordView on menu 
+2025-08-30 03:11:54,481:INFO:flask_appbuilder.baseviews:Registering route /resetpassword/form ['GET']
+2025-08-30 03:11:54,482:INFO:flask_appbuilder.baseviews:Registering route /resetpassword/form ['POST']
+2025-08-30 03:11:54,488:INFO:flask_appbuilder.base:Registering class ResetMyPasswordView on menu 
+2025-08-30 03:11:54,488:INFO:flask_appbuilder.baseviews:Registering route /resetmypassword/form ['GET']
+2025-08-30 03:11:54,488:INFO:flask_appbuilder.baseviews:Registering route /resetmypassword/form ['POST']
+2025-08-30 03:11:54,492:INFO:flask_appbuilder.base:Registering class UserInfoEditView on menu 
+2025-08-30 03:11:54,492:INFO:flask_appbuilder.baseviews:Registering route /userinfoeditview/form ['GET']
+2025-08-30 03:11:54,492:INFO:flask_appbuilder.baseviews:Registering route /userinfoeditview/form ['POST']
+2025-08-30 03:11:54,496:INFO:flask_appbuilder.base:Registering class AuthDBView on menu 
+2025-08-30 03:11:54,496:INFO:flask_appbuilder.baseviews:Registering route /login/ ['GET', 'POST']
+2025-08-30 03:11:54,496:INFO:flask_appbuilder.baseviews:Registering route /logout/ ('GET',)
+2025-08-30 03:11:54,500:INFO:flask_appbuilder.base:Registering class UserDBModelView on menu List Users
+2025-08-30 03:11:54,500:INFO:flask_appbuilder.baseviews:Registering route /users/action/<string:name>/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,500:INFO:flask_appbuilder.baseviews:Registering route /users/action_post ['POST']
+2025-08-30 03:11:54,500:INFO:flask_appbuilder.baseviews:Registering route /users/add ['GET', 'POST']
+2025-08-30 03:11:54,500:INFO:flask_appbuilder.baseviews:Registering route /users/api ['GET']
+2025-08-30 03:11:54,500:INFO:flask_appbuilder.baseviews:Registering route /users/api/column/add/<col_name> ['GET']
+2025-08-30 03:11:54,500:INFO:flask_appbuilder.baseviews:Registering route /users/api/column/edit/<col_name> ['GET']
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/api/create ['POST']
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/api/delete/<pk> ['DELETE']
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/api/get/<pk> ['GET']
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/api/read ['GET']
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/api/readvalues ['GET']
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/api/update/<pk> ['PUT']
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/delete/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/download/<string:filename> ('GET',)
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/edit/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/list/ ('GET',)
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/show/<pk> ['GET']
+2025-08-30 03:11:54,501:INFO:flask_appbuilder.baseviews:Registering route /users/userinfo/ ('GET',)
+2025-08-30 03:11:54,522:INFO:flask_appbuilder.base:Registering class RoleModelView on menu List Roles
+2025-08-30 03:11:54,522:INFO:flask_appbuilder.baseviews:Registering route /roles/action/<string:name>/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/action_post ['POST']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/add ['GET', 'POST']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/api ['GET']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/api/column/add/<col_name> ['GET']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/api/column/edit/<col_name> ['GET']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/api/create ['POST']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/api/delete/<pk> ['DELETE']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/api/get/<pk> ['GET']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/api/read ['GET']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/api/readvalues ['GET']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/api/update/<pk> ['PUT']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/delete/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/download/<string:filename> ('GET',)
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/edit/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/list/ ('GET',)
+2025-08-30 03:11:54,523:INFO:flask_appbuilder.baseviews:Registering route /roles/show/<pk> ['GET']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.base:Registering class UserGroupModelView on menu List Groups
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/action/<string:name>/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/action_post ['POST']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/add ['GET', 'POST']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/api ['GET']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/api/column/add/<col_name> ['GET']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/api/column/edit/<col_name> ['GET']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/api/create ['POST']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/api/delete/<pk> ['DELETE']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/api/get/<pk> ['GET']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/api/read ['GET']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/api/readvalues ['GET']
+2025-08-30 03:11:54,541:INFO:flask_appbuilder.baseviews:Registering route /groups/api/update/<pk> ['PUT']
+2025-08-30 03:11:54,542:INFO:flask_appbuilder.baseviews:Registering route /groups/delete/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,542:INFO:flask_appbuilder.baseviews:Registering route /groups/download/<string:filename> ('GET',)
+2025-08-30 03:11:54,542:INFO:flask_appbuilder.baseviews:Registering route /groups/edit/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,542:INFO:flask_appbuilder.baseviews:Registering route /groups/list/ ('GET',)
+2025-08-30 03:11:54,542:INFO:flask_appbuilder.baseviews:Registering route /groups/show/<pk> ['GET']
+2025-08-30 03:11:54,560:INFO:flask_appbuilder.base:Registering class UserStatsChartView on menu User's Statistics
+2025-08-30 03:11:54,561:INFO:flask_appbuilder.baseviews:Registering route /userstatschartview/chart/ ('GET',)
+2025-08-30 03:11:54,561:INFO:flask_appbuilder.baseviews:Registering route /userstatschartview/chart/<group_by> ('GET',)
+2025-08-30 03:11:54,573:INFO:flask_appbuilder.base:Registering class PermissionModelView on menu Base Permissions
+2025-08-30 03:11:54,573:INFO:flask_appbuilder.baseviews:Registering route /permissions/action/<string:name>/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,573:INFO:flask_appbuilder.baseviews:Registering route /permissions/action_post ['POST']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/add ['GET', 'POST']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/api ['GET']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/api/column/add/<col_name> ['GET']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/api/column/edit/<col_name> ['GET']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/api/create ['POST']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/api/delete/<pk> ['DELETE']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/api/get/<pk> ['GET']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/api/read ['GET']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/api/readvalues ['GET']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/api/update/<pk> ['PUT']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/delete/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/download/<string:filename> ('GET',)
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/edit/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/list/ ('GET',)
+2025-08-30 03:11:54,574:INFO:flask_appbuilder.baseviews:Registering route /permissions/show/<pk> ['GET']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.base:Registering class ViewMenuModelView on menu Views/Menus
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/action/<string:name>/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/action_post ['POST']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/add ['GET', 'POST']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/api ['GET']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/api/column/add/<col_name> ['GET']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/api/column/edit/<col_name> ['GET']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/api/create ['POST']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/api/delete/<pk> ['DELETE']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/api/get/<pk> ['GET']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/api/read ['GET']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/api/readvalues ['GET']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/api/update/<pk> ['PUT']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/delete/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/download/<string:filename> ('GET',)
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/edit/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,592:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/list/ ('GET',)
+2025-08-30 03:11:54,593:INFO:flask_appbuilder.baseviews:Registering route /viewmenus/show/<pk> ['GET']
+2025-08-30 03:11:54,640:INFO:flask_appbuilder.base:Registering class PermissionViewModelView on menu Permission on Views/Menus
+2025-08-30 03:11:54,640:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/action/<string:name>/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,640:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/action_post ['POST']
+2025-08-30 03:11:54,640:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/add ['GET', 'POST']
+2025-08-30 03:11:54,640:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/api ['GET']
+2025-08-30 03:11:54,640:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/api/column/add/<col_name> ['GET']
+2025-08-30 03:11:54,640:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/api/column/edit/<col_name> ['GET']
+2025-08-30 03:11:54,640:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/api/create ['POST']
+2025-08-30 03:11:54,641:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/api/delete/<pk> ['DELETE']
+2025-08-30 03:11:54,641:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/api/get/<pk> ['GET']
+2025-08-30 03:11:54,641:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/api/read ['GET']
+2025-08-30 03:11:54,641:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/api/readvalues ['GET']
+2025-08-30 03:11:54,641:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/api/update/<pk> ['PUT']
+2025-08-30 03:11:54,641:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/delete/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,641:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/download/<string:filename> ('GET',)
+2025-08-30 03:11:54,641:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/edit/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,641:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/list/ ('GET',)
+2025-08-30 03:11:54,641:INFO:flask_appbuilder.baseviews:Registering route /permissionviews/show/<pk> ['GET']
+2025-08-30 03:11:54,658:INFO:flask_appbuilder.base:Registering class MenuApi on menu 
+2025-08-30 03:11:54,658:INFO:flask_appbuilder.api:Registering route /api/v1/menu/ ['GET']
+2025-08-30 03:11:54,699:WARNING:flask_appbuilder.models.filters:Filter type not supported for column: nodes
+2025-08-30 03:11:54,699:WARNING:flask_appbuilder.models.filters:Filter type not supported for column: nodes
+2025-08-30 03:11:54,699:WARNING:flask_appbuilder.models.filters:Filter type not supported for column: nodes
+2025-08-30 03:11:54,699:ERROR:flask_appbuilder.forms:Column nodes Type not supported
+2025-08-30 03:11:54,699:ERROR:flask_appbuilder.forms:Column nodes Type not supported
+2025-08-30 03:11:54,699:ERROR:flask_appbuilder.forms:Column nodes Type not supported
+2025-08-30 03:11:54,700:INFO:flask_appbuilder.base:Registering class DeckModelView on menu Decks
+2025-08-30 03:11:54,700:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/action/<string:name>/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,700:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/action_post ['POST']
+2025-08-30 03:11:54,700:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/add ['GET', 'POST']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/api ['GET']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/api/column/add/<col_name> ['GET']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/api/column/edit/<col_name> ['GET']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/api/create ['POST']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/api/delete/<pk> ['DELETE']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/api/get/<pk> ['GET']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/api/read ['GET']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/api/readvalues ['GET']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/api/update/<pk> ['PUT']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/delete/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/download/<string:filename> ('GET',)
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/edit/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/list/ ('GET',)
+2025-08-30 03:11:54,701:INFO:flask_appbuilder.baseviews:Registering route /deckmodelview/show/<pk> ['GET']
+2025-08-30 03:11:54,718:WARNING:flask_appbuilder.models.filters:Filter type not supported for column: nodes
+2025-08-30 03:11:54,718:WARNING:flask_appbuilder.models.filters:Filter type not supported for column: deck_order
+2025-08-30 03:11:54,718:WARNING:flask_appbuilder.models.filters:Filter type not supported for column: nodes
+2025-08-30 03:11:54,719:WARNING:flask_appbuilder.models.filters:Filter type not supported for column: deck_order
+2025-08-30 03:11:54,719:WARNING:flask_appbuilder.models.filters:Filter type not supported for column: nodes
+2025-08-30 03:11:54,719:WARNING:flask_appbuilder.models.filters:Filter type not supported for column: deck_order
+2025-08-30 03:11:54,719:ERROR:flask_appbuilder.forms:Column nodes Type not supported
+2025-08-30 03:11:54,719:ERROR:flask_appbuilder.forms:Column deck_order Type not supported
+2025-08-30 03:11:54,719:ERROR:flask_appbuilder.forms:Column nodes Type not supported
+2025-08-30 03:11:54,719:ERROR:flask_appbuilder.forms:Column deck_order Type not supported
+2025-08-30 03:11:54,719:ERROR:flask_appbuilder.forms:Column nodes Type not supported
+2025-08-30 03:11:54,719:ERROR:flask_appbuilder.forms:Column deck_order Type not supported
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.base:Registering class RoutineModelView on menu Routines
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/action/<string:name>/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/action_post ['POST']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/add ['GET', 'POST']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/api ['GET']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/api/column/add/<col_name> ['GET']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/api/column/edit/<col_name> ['GET']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/api/create ['POST']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/api/delete/<pk> ['DELETE']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/api/get/<pk> ['GET']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/api/read ['GET']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/api/readvalues ['GET']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/api/update/<pk> ['PUT']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/delete/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/download/<string:filename> ('GET',)
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/edit/<pk> ['GET', 'POST']
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/list/ ('GET',)
+2025-08-30 03:11:54,720:INFO:flask_appbuilder.baseviews:Registering route /routinemodelview/show/<pk> ['GET']
+ * Serving Flask app 'app'
+ * Debug mode: on
+Traceback (most recent call last):
+  File "run.py", line 3, in <module>
+    app.run(host="0.0.0.0", port=8080, debug=True)
+  File "/home/ubuntu/.local/lib/python3.8/site-packages/flask/app.py", line 889, in run
+    run_simple(t.cast(str, host), port, self, **options)
+  File "/home/ubuntu/.local/lib/python3.8/site-packages/werkzeug/serving.py", line 1083, in run_simple
+    application = DebuggedApplication(application, evalex=use_evalex)
+  File "/home/ubuntu/.local/lib/python3.8/site-packages/werkzeug/debug/__init__.py", line 291, in __init__
+    self._failed_pin_auth = Value("B")
+  File "/usr/lib/python3.8/multiprocessing/context.py", line 135, in Value
+    return Value(typecode_or_type, *args, lock=lock,
+  File "/usr/lib/python3.8/multiprocessing/sharedctypes.py", line 74, in Value
+    obj = RawValue(typecode_or_type, *args)
+  File "/usr/lib/python3.8/multiprocessing/sharedctypes.py", line 49, in RawValue
+    obj = _new_value(type_)
+  File "/usr/lib/python3.8/multiprocessing/sharedctypes.py", line 41, in _new_value
+    wrapper = heap.BufferWrapper(size)
+  File "/usr/lib/python3.8/multiprocessing/heap.py", line 331, in __init__
+    block = BufferWrapper._heap.malloc(size)
+  File "/usr/lib/python3.8/multiprocessing/heap.py", line 309, in malloc
+    (arena, start, stop) = self._malloc(size)
+  File "/usr/lib/python3.8/multiprocessing/heap.py", line 192, in _malloc
+    return self._new_arena(size)
+  File "/usr/lib/python3.8/multiprocessing/heap.py", line 166, in _new_arena
+    arena = Arena(length)
+  File "/usr/lib/python3.8/multiprocessing/heap.py", line 83, in __init__
+    self.fd, name = tempfile.mkstemp(
+  File "/usr/lib/python3.8/tempfile.py", line 486, in mkstemp
+    return _mkstemp_inner(dir, prefix, suffix, flags, output_type)
+  File "/usr/lib/python3.8/tempfile.py", line 389, in _mkstemp_inner
+    fd = _os.open(file, flags, 0o600)
+PermissionError: [Errno 13] Permission denied: '/dev/shm/pym-1909374-klqqfb21'

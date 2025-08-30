@@ -144,7 +144,7 @@ def get_user():
     return jsonify({'id': u.id, 'email': u.email, 'credits': getattr(u, 'credits', 0)})
 
 # Deck endpoints
-from .models import Deck, Routine
+from .models import Deck, Routine, Actuar
 
 @bp.route('/decks', methods=['GET'])
 @require_user
@@ -333,3 +333,95 @@ def logout():
     token = request.headers.get('Authorization') or request.args.get('token')
     SESSIONS.pop(token, None)
     return jsonify({'success': True})
+
+# --- Actuar endpoints ---
+import os
+import html as _html
+
+def _safe_filename(name: str) -> str:
+    # Replace any non url-friendly char with underscore for convenience alias
+    return ''.join(c if c.isalnum() or c in ('-', '_', '.') else '_' for c in (name or 'unknown'))
+
+def _write_actuar_static(username: str, text: str) -> dict:
+    try:
+        # Ensure static/actuar dir exists
+        base_dir = os.path.join(app.root_path, 'static', 'actuar')
+        os.makedirs(base_dir, exist_ok=True)
+        safe_user = _safe_filename(username)
+        # Escape text to avoid XSS in the static file
+        esc_text = _html.escape(text or "")
+        html_doc = (
+            "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\">"
+            f"<title>actuar — { _html.escape(username or '') }</title>"
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+            "<style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:2rem;max-width:60ch;line-height:1.5}pre{white-space:pre-wrap;word-wrap:break-word;background:#f6f8fa;padding:1rem;border-radius:8px}</style>"
+            "</head><body>"
+            f"<h1>actuar: { _html.escape(username or '') }</h1>"
+            f"<pre>{esc_text}</pre>"
+            "</body></html>"
+        )
+        # Write both the literal username filename and a safe alias for convenience
+        literal_path = os.path.join(base_dir, f"{username}.html")
+        with open(literal_path, 'w', encoding='utf-8') as f:
+            f.write(html_doc)
+        alias_path = None
+        if safe_user != username and safe_user:
+            alias_path = os.path.join(base_dir, f"{safe_user}.html")
+            with open(alias_path, 'w', encoding='utf-8') as f:
+                f.write(html_doc)
+        # Return public URLs
+        base_url = '/static/actuar'
+        return {
+            'url': f"{base_url}/{username}.html",
+            'alias_url': f"{base_url}/{safe_user}.html" if alias_path else None,
+        }
+    except Exception as e:
+        return {'error': str(e)}
+
+@bp.route('/actuar', methods=['POST'])
+@require_user
+def post_actuar():
+    data = request.get_json(silent=True) or {}
+    text = data.get('text')
+    if text is None:
+        # allow form-encoded fallback
+        text = request.form.get('text')
+    if text is None:
+        return jsonify({'error': 'text required'}), 400
+    u = request.current_user
+    # Upsert the user's actuar row
+    row = db.session.query(Actuar).filter_by(user_id=u.id).first()
+    if not row:
+        row = Actuar(user_id=u.id, text=str(text))
+        db.session.add(row)
+    else:
+        row.text = str(text)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return jsonify({'error': 'failed to save'}), 500
+    urls = _write_actuar_static(getattr(u, 'username', getattr(u, 'email', str(u.id))), row.text)
+    resp = {
+        'success': True,
+        'text': row.text,
+        'updated_at': row.updated_at.isoformat() if row.updated_at else None,
+        'static': urls,
+    }
+    return jsonify(resp), 200
+
+@bp.route('/actuar/<path:username>', methods=['GET'])
+def get_actuar_public(username):
+    # Public endpoint: return latest actuar text for given username
+    if not username:
+        return jsonify({'error': 'username required'}), 400
+    user = db.session.query(UserModel).filter_by(username=username).first()
+    if not user:
+        # Try by email if username didn't match
+        user = db.session.query(UserModel).filter_by(email=username).first()
+    if not user:
+        return jsonify({'error': 'user not found'}), 404
+    row = db.session.query(Actuar).filter_by(user_id=user.id).first()
+    if not row:
+        return jsonify({'username': username, 'text': None, 'updated_at': None}), 200
+    return jsonify(row.to_dict(username=username)), 200
