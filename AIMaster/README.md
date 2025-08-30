@@ -198,4 +198,25 @@ curl "http://localhost:8080/api/decks?token=token-<id>-<ts>"
   - `node_info: { [type: string]: string }`
   - `default_node_config: { [type: string]: object }`
   - `version: string`
+
+## RN CORS Tester
+
+- Script: `scripts/rn_cors_api_tester.py`
+- Purpose: Simulates a React Native client, performs CORS preflight (`OPTIONS`) checks and exercises all API endpoints with detailed request/response logging.
+- Setup:
+  - Ensure the app is running: `python run.py` (defaults to `http://0.0.0.0:8080`).
+  - Install tester dependency: `pip install -r requirements.txt` (includes `requests`).
+  - Edit `SERVER_IP` in the script to your server IP/host if not localhost.
+- Run:
+  - `python scripts/rn_cors_api_tester.py`
+- What it does:
+  - GET `/api/config` (public)
+  - POST `/api/register` (handles already-registered by retrying with a random email)
+  - POST `/api/login` and captures token
+  - Authenticated calls via header and via `?token=` query param
+  - Credits flow: GET, POST add, GET
+  - Decks flow: list, create, get, update, delete, and 404 check
+  - Routines flow: list, create (linked to deck), get, update, delete
+  - Logout and verify 401 on subsequent call
+  - Sends CORS preflight (OPTIONS) before mutating requests and prints CORS headers of interest
 - 500 JSON: `{ "error": string }`
