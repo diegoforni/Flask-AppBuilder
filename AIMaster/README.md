@@ -5,7 +5,7 @@ This repository exposes a JSON API via Flask and Flask-AppBuilder. Use the route
 ## Quick Start
 
 1. Install dependencies (example):
-   - `pip install -r requirements.txt` (if present) or install Flask, Flask-AppBuilder, SQLAlchemy, Flask-Login.
+   - `pip install -r requirements.txt` (if present) or install Flask, Flask-AppBuilder, SQLAlchemy, Flask-Login, Flask-Cors.
 2. Run the app:
    - `python run.py` (serves on `http://0.0.0.0:8080`).
 3. Base URL for the API:
@@ -14,6 +14,11 @@ This repository exposes a JSON API via Flask and Flask-AppBuilder. Use the route
 Notes:
 - The `backend/` folder contains a separate sample Flask app and is not used by `run.py`.
 - Tokens are stored in-memory and are cleared on process restart.
+
+## CORS
+
+- CORS is enabled for routes under `/api/*` with `origins: *`, credentials support, and headers `Content-Type` and `Authorization` allowed.
+- Intended to support mobile app calls from `http://161.153.217.110:8080/api`.
 
 ## Authentication
 
@@ -115,6 +120,7 @@ Routine object shape (response):
   "stack": string|null,
   "deck_id": string|null,
   "nodes": array,
+  "deck_order": array,          // optional; serialized as [] if null
   "owner_id": number,
   "created_at": ISO8601 string,
   "last_run_at": ISO8601 string|null
@@ -132,8 +138,9 @@ Routine object shape (response):
   - `nodes: array` (optional; defaults `[]`)
   - `deck_id: number` (optional; must belong to user if provided)
   - `stack: string` (optional; alias `deck_name`. If `deck_id` not set, server will try to find a deck by this name for the user.)
+  - `deck_order: array|null` (optional)
 - 201: `Routine`
-- 400: `{ "error": "name required" | "nodes must be a list" }`
+- 400: `{ "error": "name required" | "nodes must be a list" | "deck_order must be a list" }`
 - 404: `{ "error": "deck not found or unauthorized" }`
 
 ### GET `/api/routines/<routine_id>`
@@ -143,9 +150,9 @@ Routine object shape (response):
 
 ### PUT `/api/routines/<routine_id>`
 - Auth: required
-- Body (partial update): `name`, `stack`, `nodes`, `deck_id` (if non-null, must be owned)
+- Body (partial update): `name`, `stack`, `nodes`, `deck_id` (if non-null, must be owned), `deck_order` (array|null)
 - 200: `Routine`
-- 400: `{ "error": "nodes must be a list" }`
+- 400: `{ "error": "nodes must be a list" | "deck_order must be a list" }`
 - 404: `{ "error": "not found" | "deck not found or unauthorized" }`
 
 ### DELETE `/api/routines/<routine_id>`
@@ -181,3 +188,14 @@ curl "http://localhost:8080/api/decks?token=token-<id>-<ts>"
 - API blueprint is defined in `app/api.py` and registered in `app/__init__.py`.
 - SQL models live in `app/models.py` (`Deck`, `Routine`) and extend the FAB user model with a `credits` column.
 - A duplicate GET `/api/user/credits` exists via FAB view in `app/views.py`; for token-based auth, prefer the blueprint version.
+
+## Public Config Endpoint
+
+### GET `/api/config`
+- Auth: none
+- 200 JSON:
+  - `node_types: string[]`
+  - `node_info: { [type: string]: string }`
+  - `default_node_config: { [type: string]: object }`
+  - `version: string`
+- 500 JSON: `{ "error": string }`

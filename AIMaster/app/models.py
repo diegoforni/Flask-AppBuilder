@@ -40,6 +40,8 @@ class Routine(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
     nodes = Column(SQLiteJSON, nullable=True, default=list)
+    # Optional ordering of deck cards (editor's deckOrder)
+    deck_order = Column(SQLiteJSON, nullable=True)
     stack = Column(String(255), nullable=True)
     deck_id = Column(Integer, ForeignKey('decks.id'), nullable=True)
     owner_id = Column(Integer, ForeignKey('ab_user.id'), nullable=False)
@@ -53,6 +55,7 @@ class Routine(Model):
             'stack': self.stack,
             'deck_id': str(self.deck_id) if self.deck_id is not None else None,
             'nodes': self.nodes or [],
+            'deck_order': self.deck_order or [],
             'owner_id': self.owner_id,
             'created_at': self.created_at.isoformat(),
             'last_run_at': self.last_run_at.isoformat() if self.last_run_at else None

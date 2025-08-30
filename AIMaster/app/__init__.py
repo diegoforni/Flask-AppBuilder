@@ -1,6 +1,7 @@
 import logging
 
 from flask import Flask
+from flask_cors import CORS
 from flask_appbuilder import AppBuilder, SQLA
 
 """
@@ -14,6 +15,14 @@ app.config.from_object("config")
 # initialize Flask-AppBuilder SQLA db
 db = SQLA(app)
 appbuilder = AppBuilder(app, db.session)
+
+# Enable CORS for mobile app calls
+CORS(
+    app,
+    resources={r"/api/*": {"origins": "*"}},
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization"],
+)
 
 # After AppBuilder is created, augment its user model to include credits
 try:
@@ -60,6 +69,21 @@ try:
                 except Exception:
                     try:
                         conn.execute(text("ALTER TABLE auth_user ADD COLUMN credits INTEGER DEFAULT 0"))
+                    except Exception:
+                        pass
+            # Ensure routines.deck_order column exists (nullable JSON)
+            try:
+                res = conn.execute(text("PRAGMA table_info(routines)"))
+                routine_cols = [r[1] for r in res.fetchall()]
+            except Exception:
+                routine_cols = []
+            if 'deck_order' not in routine_cols:
+                try:
+                    # SQLite doesn't enforce JSON type; store as TEXT compatible with JSON
+                    conn.execute(text("ALTER TABLE routines ADD COLUMN deck_order JSON"))
+                except Exception:
+                    try:
+                        conn.execute(text("ALTER TABLE routines ADD COLUMN deck_order TEXT"))
                     except Exception:
                         pass
             conn.close()

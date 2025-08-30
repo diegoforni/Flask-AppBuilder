@@ -12,6 +12,49 @@ SESSIONS = {}
 # Helper to get FAB user model - FIXED VERSION
 UserModel = appbuilder.sm.user_model
 
+# Public app configuration for mobile/frontend clients
+@bp.route('/config', methods=['GET'])
+def get_app_config():
+    try:
+        config = {
+            # Keep these in sync with frontend constants
+            "node_types": [
+                "Iniciar",
+                "Capturar Imagen",
+                "Conversación",
+                "Encontrar una Carta",
+                "Carta al Número",
+                "Pesar Cartas",
+                "Coincidencia Absoluta",
+                "Códigos Secretos",
+            ],
+            "node_info": {
+                "Iniciar": "Configura el primer mensaje...",
+            },
+            "default_node_config": {
+                "Iniciar": {
+                    "startMessage": "Estoy listo para hacer magia.",
+                    "personality": "Sé muy sarcástico.",
+                }
+            },
+            # Bump to bust client cache when server config changes
+            "version": "2025-01-01",
+        }
+
+        # Basic type validation
+        if not isinstance(config.get("node_types"), list) or not all(isinstance(x, str) for x in config["node_types"]):
+            raise ValueError("node_types must be a list of strings")
+        if not isinstance(config.get("node_info"), dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in config["node_info"].items()):
+            raise ValueError("node_info must be a dict of strings")
+        if not isinstance(config.get("default_node_config"), dict):
+            raise ValueError("default_node_config must be a dict")
+        if not isinstance(config.get("version"), str):
+            raise ValueError("version must be a string")
+
+        return jsonify(config), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Registration: create a FAB user using security manager
 @bp.route('/register', methods=['POST'])
 def register():
@@ -166,10 +209,13 @@ def create_routine():
     stack = data.get('stack') or data.get('deck_name')
     deck_id = data.get('deck_id')
     nodes = data.get('nodes') or []
+    deck_order = data.get('deck_order') if 'deck_order' in data else None
     if not name:
         return jsonify({'error': 'name required'}), 400
     if not isinstance(nodes, list):
         return jsonify({'error': 'nodes must be a list'}), 400
+    if 'deck_order' in data and not isinstance(deck_order, list):
+        return jsonify({'error': 'deck_order must be a list'}), 400
     # if deck provided, ensure ownership
     if deck_id:
         deck = db.session.query(Deck).filter_by(id=deck_id, owner_id=request.current_user.id).first()
@@ -179,7 +225,14 @@ def create_routine():
         deck = None
         if stack:
             deck = db.session.query(Deck).filter_by(name=stack, owner_id=request.current_user.id).first()
-    routine = Routine(name=name, stack=stack, deck_id=deck.id if deck else None, nodes=nodes, owner_id=request.current_user.id)
+    routine = Routine(
+        name=name,
+        stack=stack,
+        deck_id=deck.id if deck else None,
+        nodes=nodes,
+        deck_order=deck_order if 'deck_order' in data else None,
+        owner_id=request.current_user.id,
+    )
     db.session.add(routine)
     db.session.commit()
     resp = routine.to_dict()
@@ -207,6 +260,11 @@ def update_routine(routine_id):
         if not isinstance(nodes, list):
             return jsonify({'error': 'nodes must be a list'}), 400
         r.nodes = nodes
+    if 'deck_order' in data:
+        deck_order = data.get('deck_order')
+        if deck_order is not None and not isinstance(deck_order, list):
+            return jsonify({'error': 'deck_order must be a list'}), 400
+        r.deck_order = deck_order
     if 'deck_id' in data:
         deck_id = data.get('deck_id')
         if deck_id:
