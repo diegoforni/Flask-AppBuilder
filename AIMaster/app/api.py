@@ -338,16 +338,29 @@ def logout():
 import os
 import html as _html
 
-def _safe_filename(name: str) -> str:
-    # Replace any non url-friendly char with underscore for convenience alias
-    return ''.join(c if c.isalnum() or c in ('-', '_', '.') else '_' for c in (name or 'unknown'))
+def _derive_sanitized_username(user) -> str:
+    """Derive username from user's email local-part; fallback to user.id or 'public'.
+    Sanitize to lowercase [a-z0-9_-] only. If empty after sanitization, use 'public'."""
+    base = None
+    try:
+        email = getattr(user, 'email', None)
+        if isinstance(email, str) and '@' in email:
+            base = email.split('@', 1)[0]
+    except Exception:
+        base = None
+    if not base:
+        uid = getattr(user, 'id', None)
+        base = str(uid) if uid is not None else 'public'
+    sanitized = ''.join(c for c in (base or '').lower() if (c.isalnum() or c in '-_'))
+    return sanitized or 'public'
 
 def _write_actuar_static(username: str, text: str) -> dict:
     try:
         # Ensure static/actuar dir exists
         base_dir = os.path.join(app.root_path, 'static', 'actuar')
         os.makedirs(base_dir, exist_ok=True)
-        safe_user = _safe_filename(username)
+        # Ensure provided username is sanitized to [a-z0-9_-]
+        username = ''.join(c for c in (username or '').lower() if (c.isalnum() or c in '-_')) or 'public'
         # Escape text to avoid XSS in the static file
         esc_text = _html.escape(text or "")
         html_doc = (
@@ -360,20 +373,14 @@ def _write_actuar_static(username: str, text: str) -> dict:
             f"<pre>{esc_text}</pre>"
             "</body></html>"
         )
-        # Write both the literal username filename and a safe alias for convenience
-        literal_path = os.path.join(base_dir, f"{username}.html")
-        with open(literal_path, 'w', encoding='utf-8') as f:
+        # Write sanitized filename only
+        out_path = os.path.join(base_dir, f"{username}.html")
+        with open(out_path, 'w', encoding='utf-8') as f:
             f.write(html_doc)
-        alias_path = None
-        if safe_user != username and safe_user:
-            alias_path = os.path.join(base_dir, f"{safe_user}.html")
-            with open(alias_path, 'w', encoding='utf-8') as f:
-                f.write(html_doc)
-        # Return public URLs
+        # Return public URL
         base_url = '/static/actuar'
         return {
             'url': f"{base_url}/{username}.html",
-            'alias_url': f"{base_url}/{safe_user}.html" if alias_path else None,
         }
     except Exception as e:
         return {'error': str(e)}
@@ -401,7 +408,9 @@ def post_actuar():
     except Exception:
         db.session.rollback()
         return jsonify({'error': 'failed to save'}), 500
-    urls = _write_actuar_static(getattr(u, 'username', getattr(u, 'email', str(u.id))), row.text)
+    # Derive username from email local-part; fallback to id/public, sanitized [a-z0-9_-]
+    san_user = _derive_sanitized_username(u)
+    urls = _write_actuar_static(san_user, row.text)
     resp = {
         'success': True,
         'text': row.text,
