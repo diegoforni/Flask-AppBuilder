@@ -339,6 +339,65 @@ def main() -> int:
             hard_cors_fail = True
             results[-1].notes = f"CORS: {note}"
 
+    # Actuar flow (save text, public JSON, static HTML)
+    log_header("CORS preflight: POST /actuar")
+    r = preflight(sess, origin, f"{base}/actuar", "POST", req_headers="content-type, authorization", timeout=args.timeout)
+    results.append(Result("preflight_actuar_post", r.status_code in (200, 204), r.status_code))
+    ok, note = cors_ok_for_preflight(r, origin, "POST", "content-type, authorization", want_credentials=False)
+    if not ok:
+        hard_cors_fail = True
+        results[-1].notes = f"CORS: {note}"
+
+    # POST /actuar with first text
+    text1 = f"Hello RN tester {uuid.uuid4().hex[:8]}"
+    log_header("POST /actuar (create/update)")
+    r = call(sess, origin, "POST", f"{base}/actuar", token=token, body={"text": text1}, timeout=args.timeout)
+    results.append(Result("actuar_post", r.ok, r.status_code))
+    static_url = None
+    try:
+        data = r.json()
+        static_rel = (data.get("static") or {}).get("url")
+        if isinstance(static_rel, str) and static_rel.startswith("/static/"):
+            static_url = f"{scheme}://{host}:{port}{static_rel}"
+    except Exception:
+        static_url = None
+
+    # GET static HTML and check content
+    if static_url:
+        log_header("GET static actuar HTML")
+        print_req("GET", static_url, {"Origin": origin, "Accept": "text/html"})
+        sr = sess.get(static_url, headers={"Origin": origin, "Accept": "text/html"}, timeout=args.timeout)
+        print_res(sr)
+        ok_html = sr.status_code == 200 and text1 in sr.text
+        results.append(Result("actuar_static", ok_html, sr.status_code))
+    else:
+        results.append(Result("actuar_static", False, None, notes="no static url"))
+
+    # Public JSON by username (email)
+    log_header("GET /actuar/<username> (public JSON)")
+    pr = call(sess, origin, "GET", f"{base}/actuar/{email}", timeout=args.timeout)
+    p_ok = False
+    try:
+        pj = pr.json()
+        p_ok = pr.status_code == 200 and pj.get("username") == email and pj.get("text") == text1
+    except Exception:
+        p_ok = False
+    results.append(Result("actuar_public", p_ok, pr.status_code))
+
+    # Update text and verify static updates
+    text2 = f"Updated RN {uuid.uuid4().hex[:6]}"
+    log_header("POST /actuar (update)")
+    r2 = call(sess, origin, "POST", f"{base}/actuar", token=token, body={"text": text2}, timeout=args.timeout)
+    results.append(Result("actuar_update", r2.ok, r2.status_code))
+    if static_url:
+        log_header("GET static actuar HTML (updated)")
+        sr2 = sess.get(static_url, headers={"Origin": origin, "Accept": "text/html"}, timeout=args.timeout)
+        print_res(sr2)
+        ok_html2 = sr2.status_code == 200 and (text2 in sr2.text) and (text1 not in sr2.text)
+        results.append(Result("actuar_static_updated", ok_html2, sr2.status_code))
+    else:
+        results.append(Result("actuar_static_updated", False, None, notes="no static url"))
+
         log_header("GET /user with ?token=")
         r = call(sess, origin, "GET", f"{base}/user?token={token}", timeout=args.timeout)
         results.append(Result("user_query", r.ok, r.status_code))

@@ -264,6 +264,7 @@ open http://localhost:8080/static/actuar/alice@example.com.html
   - GET `/api/config` (public)
   - POST `/api/register` (handles already-registered by retrying with a random email)
   - POST `/api/login` and captures token
+  - Actuar flow: POST `/api/actuar`, GET `/api/actuar/<username>`, GET static HTML to verify latest content
   - Authenticated calls via header and via `?token=` query param
   - Credits flow: GET, POST add, GET
   - Decks flow: list, create, get, update, delete, and 404 check
@@ -280,8 +281,4 @@ open http://localhost:8080/static/actuar/alice@example.com.html
 python -m unittest -v
 ```
 
-- The Actuar flow test covers:
-  - Register + Login
-  - POST `/api/actuar` to save text and write static HTML
-  - GET `/api/actuar/<username>` to fetch public JSON
-  - GET the static HTML to verify latest content
+- Note: The RN CORS tester includes the Actuar flow end-to-end (POST `/api/actuar`, public JSON, and static HTML checks), so you can validate it alongside the rest of the RN/API scenarios.
