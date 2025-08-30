@@ -11,12 +11,14 @@ Usage:
 Before running, edit SERVER_IP below to match your server.
 """
 
+import argparse
 import json
+import os
 import sys
 import time
 import uuid
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple, List
 
 import requests
 
@@ -25,8 +27,9 @@ import requests
 # Config — EDIT AS NEEDED
 # ========================
 
-# Replace with your server IP or hostname
+# Replace with your server IP or hostname (can be overridden by --host or env API_HOST)
 SERVER_IP = "127.0.0.1"  # e.g. "161.153.217.110"
+# Default port (can be overridden by --port or env API_PORT). If set to 0, will auto-discover.
 PORT = 8080
 
 # Simulated RN origin (Expo dev server, mobile app webview, etc.)
@@ -127,8 +130,55 @@ def call(sess: requests.Session, method: str, url: str, token: Optional[str] = N
     return r
 
 
+def discover_port(host: str, candidates: List[int]) -> Tuple[Optional[int], List[Tuple[int, str]]]:
+    """Try candidate ports by GET /api/config. Return (port, attempts log)."""
+    attempts = []
+    sess = requests.Session()
+    for p in candidates:
+        url = f"http://{host}:{p}/api/config"
+        try:
+            r = sess.get(url, headers={"Origin": ORIGIN, "Accept": "application/json"}, timeout=3)
+            if r.status_code == 200:
+                attempts.append((p, f"200 OK"))
+                return p, attempts
+            attempts.append((p, f"HTTP {r.status_code}"))
+        except requests.RequestException as e:
+            attempts.append((p, f"{type(e).__name__}: {e}"))
+    return None, attempts
+
+
 def main() -> int:
-    base = f"http://{SERVER_IP}:{PORT}/api"
+    parser = argparse.ArgumentParser(description="RN-like CORS API tester")
+    parser.add_argument("--host", default=os.getenv("API_HOST", SERVER_IP), help="API host/IP (default env API_HOST or script default)")
+    parser.add_argument("--port", default=os.getenv("API_PORT", str(PORT)), help="API port or 'auto' to discover (default env API_PORT or script default)")
+    parser.add_argument("--origin", default=os.getenv("API_ORIGIN", ORIGIN), help="Origin header to send")
+    parser.add_argument("--discover", action="store_true", help="Force port discovery before running")
+    args = parser.parse_args()
+
+    host = args.host
+    global ORIGIN
+    ORIGIN = args.origin
+
+    port_val = args.port
+    auto = args.discover or str(port_val).lower() in ("auto", "0", "none")
+    port: Optional[int]
+    if auto:
+        print("Auto-discovering port... candidates: 8080, 5000, 8000, 80")
+        port, attempts = discover_port(host, [8080, 5000, 8000, 80])
+        for p, note in attempts:
+            print(f"  Tried {host}:{p} -> {note}")
+        if port is None:
+            print("Could not discover a working port via /api/config. You may need to start the server or expose the correct port.")
+            return 3
+        print(f"Using discovered port: {port}")
+    else:
+        try:
+            port = int(port_val)
+        except ValueError:
+            print(f"Invalid --port value: {port_val}")
+            return 2
+
+    base = f"http://{host}:{port}/api"
     sess = requests.Session()
     results = []
 
@@ -339,4 +389,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nInterrupted by user.")
         sys.exit(130)
-
