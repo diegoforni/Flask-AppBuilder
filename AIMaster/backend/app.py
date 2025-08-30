@@ -232,6 +232,12 @@ def delete_routine(routine_id):
 # Actuar endpoint: consumes 1 credit per press and returns simulated result
 
 # Simple endpoint to add credits (for testing)
+@app.route('/api/user/credits', methods=['GET'])
+@require_user
+def get_credits():
+    user = request.current_user
+    return jsonify({"credits": user.credits}), 200
+
 @app.route('/api/user/credits', methods=['POST'])
 @require_user
 def add_credits():

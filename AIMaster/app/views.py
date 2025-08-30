@@ -84,9 +84,9 @@ from flask_appbuilder.security.decorators import has_access
 from flask_appbuilder import expose
 
 
-@appbuilder.app.route('/api/user/credits', methods=['GET'])
+@appbuilder.app.route('/api/user/credits-view', methods=['GET'])
 @has_access
-def get_user_credits():
+def get_user_credits_view():
     # current_user is available from FAB
     try:
         from flask_appbuilder.security.sqla.models import User

@@ -3,6 +3,7 @@ from . import app, appbuilder, db
 from flask_login import current_user
 from datetime import datetime
 from werkzeug.security import check_password_hash
+from sqlalchemy import inspect as sqla_inspect
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -11,6 +12,16 @@ SESSIONS = {}
 
 # Helper to get FAB user model - FIXED VERSION
 UserModel = appbuilder.sm.user_model
+
+
+def _table_has_column(table_name: str, column_name: str) -> bool:
+    try:
+        inspector = sqla_inspect(db.engine)
+        cols = inspector.get_columns(table_name)
+        names = {c.get('name') for c in cols}
+        return column_name in names
+    except Exception:
+        return False
 
 # Public app configuration for mobile/frontend clients
 @bp.route('/config', methods=['GET'])
@@ -225,16 +236,22 @@ def create_routine():
         deck = None
         if stack:
             deck = db.session.query(Deck).filter_by(name=stack, owner_id=request.current_user.id).first()
-    routine = Routine(
+    kwargs = dict(
         name=name,
         stack=stack,
         deck_id=deck.id if deck else None,
         nodes=nodes,
-        deck_order=deck_order if 'deck_order' in data else None,
         owner_id=request.current_user.id,
     )
+    if 'deck_order' in data and _table_has_column('routines', 'deck_order'):
+        kwargs['deck_order'] = deck_order
+    routine = Routine(**kwargs)
     db.session.add(routine)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return jsonify({'error': 'failed to create routine'}), 500
     resp = routine.to_dict()
     return jsonify(resp), 201
 
@@ -260,7 +277,7 @@ def update_routine(routine_id):
         if not isinstance(nodes, list):
             return jsonify({'error': 'nodes must be a list'}), 400
         r.nodes = nodes
-    if 'deck_order' in data:
+    if 'deck_order' in data and _table_has_column('routines', 'deck_order'):
         deck_order = data.get('deck_order')
         if deck_order is not None and not isinstance(deck_order, list):
             return jsonify({'error': 'deck_order must be a list'}), 400
