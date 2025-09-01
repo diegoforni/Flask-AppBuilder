@@ -4,6 +4,8 @@ from flask_login import current_user
 from datetime import datetime
 from werkzeug.security import check_password_hash
 from sqlalchemy import inspect as sqla_inspect
+from .models import Deck, Routine
+from .defaults import INITIAL_ROUTINES
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -90,6 +92,25 @@ def register():
             password=password
         )
         user = db.session.query(UserModel).filter_by(email=email).first()
+        # Seed initial routines for the new user
+        try:
+            for r in INITIAL_ROUTINES:
+                # Normalize payload for Routine model; ignore provided 'id'
+                name = r.get('name')
+                stack = r.get('stack')
+                nodes = r.get('nodes') or []
+                routine = Routine(
+                    name=name,
+                    stack=stack,
+                    deck_id=None,
+                    nodes=nodes,
+                    owner_id=user.id,
+                )
+                db.session.add(routine)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            # Do not fail registration if seeding fails; continue
         return jsonify({'id': user.id, 'email': user.email}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500

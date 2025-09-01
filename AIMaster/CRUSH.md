@@ -2,21 +2,21 @@
 
 ## Build/Lint/Test
 
-- No explicit build or lint tools configured.
-- To install dependencies:
+- Install dependencies:
 ```
-pip install flask-appbuilder
+pip install -r requirements.txt
 ```
-- To run the app in development:
+- Run the app in development:
 ```
-export FLASK_APP=app
-flask fab create-admin  # Create admin user the first time
-flask run
+python run.py  # serves on http://0.0.0.0:5000
 ```
-- No automated tests detected. Manual testing through running the app and browser is expected.
-- To add testing, use pytest or unittest and run tests with:
+- Run unit tests:
 ```
-pytest tests/<test_file>.py
+python -m unittest -v
+```
+- Optional end-to-end API/CORS check:
+```
+python scripts/rn_cors_api_tester.py
 ```
 
 ## Code Style Guidelines
@@ -49,19 +49,19 @@ pytest tests/<test_file>.py
 
 ### Logging
 - Logging configured with `logging.basicConfig()` at DEBUG level.
-- Use `logging.getLogger(__name__)` in modules.
+- Use `logging.getLogger(__name__)` in modules where applicable.
 
 ## Flask-AppBuilder Specific
 
-- Use `ModelView` and `ModelRestApi` for views and REST APIs.
-- Register views and APIs with `appbuilder.add_view()` / `appbuilder.add_api()`.
-- Use SQLAInterface for datamodel.
+- The app uses Flask-AppBuilder for auth/users and SQLAlchemy session management.
+- A blueprint in `app/api.py` exposes JSON endpoints under `/api`.
+- The user model is augmented at startup to include a `credits` column when missing.
 
 ## Other Notes
 
 - No Cursor or Copilot specific rules found in repo.
-- Configuration managed via `config.py` with environment-specific options.
-- Database URL configured for SQLite by default.
+- Configuration lives in `config.py`.
+- SQLite database is used by default (see `app.db`).
 
 ---
 

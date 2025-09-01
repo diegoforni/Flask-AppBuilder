@@ -7,9 +7,9 @@ This repository exposes a JSON API via Flask and Flask-AppBuilder. Use the route
 1. Install dependencies (example):
    - `pip install -r requirements.txt` (if present) or install Flask, Flask-AppBuilder, SQLAlchemy, Flask-Login, Flask-Cors.
 2. Run the app:
-   - `python run.py` (serves on `http://0.0.0.0:8080`).
+   - `python run.py` (serves on `http://0.0.0.0:5000`).
 3. Base URL for the API:
-   - `http://localhost:8080/api`
+   - `http://localhost:5000/api`
 
 Notes:
 - The `backend/` folder contains a separate sample Flask app and is not used by `run.py`.
@@ -18,7 +18,7 @@ Notes:
 ## CORS
 
 - CORS is enabled for routes under `/api/*` with `origins: *`, credentials support, and headers `Content-Type` and `Authorization` allowed.
-- Intended to support mobile app calls from `http://161.153.217.110:8080/api`.
+- Intended to support mobile app calls from `http://161.153.217.110:5000/api`.
 
 ## Authentication
 
@@ -165,7 +165,7 @@ Routine object shape (response):
 Login:
 
 ```
-curl -X POST http://localhost:8080/api/login \
+curl -X POST http://localhost:5000/api/login \
   -H 'Content-Type: application/json' \
   -d '{"email":"user@example.com","password":"pw"}'
 ```
@@ -173,14 +173,14 @@ curl -X POST http://localhost:8080/api/login \
 Authenticated call (header):
 
 ```
-curl http://localhost:8080/api/user \
+curl http://localhost:5000/api/user \
   -H "Authorization: token-<id>-<ts>"
 ```
 
 Authenticated call (query param):
 
 ```
-curl "http://localhost:8080/api/decks?token=token-<id>-<ts>"
+curl "http://localhost:5000/api/decks?token=token-<id>-<ts>"
 ```
 
 ## Implementation Notes
@@ -204,7 +204,7 @@ curl "http://localhost:8080/api/decks?token=token-<id>-<ts>"
 1) Register a user (or use an existing one):
 
 ```
-curl -s -X POST http://localhost:8080/api/register \
+curl -s -X POST http://localhost:5000/api/register \
   -H 'Content-Type: application/json' \
   -d '{"email":"alice@example.com","password":"pass1234"}'
 ```
@@ -212,7 +212,7 @@ curl -s -X POST http://localhost:8080/api/register \
 2) Login and capture token:
 
 ```
-TOKEN=$(curl -s -X POST http://localhost:8080/api/login \
+TOKEN=$(curl -s -X POST http://localhost:5000/api/login \
   -H 'Content-Type: application/json' \
   -d '{"email":"alice@example.com","password":"pass1234"}' | jq -r .token)
 ```
@@ -220,24 +220,29 @@ TOKEN=$(curl -s -X POST http://localhost:8080/api/login \
 3) Post new actuar text (auth required):
 
 ```
-curl -s -X POST http://localhost:8080/api/actuar \
+curl -s -X POST http://localhost:5000/api/actuar \
   -H 'Content-Type: application/json' \
   -H "Authorization: ${TOKEN}" \
   -d '{"text":"Live update from Alice!"}'
 ```
 
-Response will include a field `static.url` such as `/static/actuar/alice@example.com.html`.
+Response includes `static.url`, which points to the public static HTML.
+Note: the filename uses a sanitized username derived from the email's local-part
+only, restricted to [a-z0-9_-]. For example, `alice@example.com` becomes
+`/static/actuar/alice.html`.
 
 4) Public JSON access (no auth):
 
 ```
-curl -s http://localhost:8080/api/actuar/alice@example.com
+curl -s http://localhost:5000/api/actuar/alice@example.com
 ```
 
 5) Public static HTML access (no auth):
 
+Use the `static.url` returned from step 3. For example:
+
 ```
-open http://localhost:8080/static/actuar/alice@example.com.html
+curl -s http://localhost:8080/static/actuar/alice.html
 ```
 
 ## Public Config Endpoint
@@ -255,7 +260,7 @@ open http://localhost:8080/static/actuar/alice@example.com.html
 - Script: `scripts/rn_cors_api_tester.py`
 - Purpose: Simulates a React Native client, performs CORS preflight (`OPTIONS`) checks and exercises all API endpoints with detailed request/response logging.
 - Setup:
-  - Ensure the app is running: `python run.py` (defaults to `http://0.0.0.0:8080`).
+  - Ensure the app is running: `python run.py` (defaults to `http://0.0.0.0:5000`).
   - Install tester dependency: `pip install -r requirements.txt` (includes `requests`).
   - Edit `SERVER_IP` in the script to your server IP/host if not localhost.
 - Run:

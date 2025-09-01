@@ -1,18 +1,13 @@
-Base Skeleton to start your application using Flask-AppBuilder
---------------------------------------------------------------
+AIMaster
+========
 
-- Install it::
+See README.md for full documentation, API routes, and usage examples.
 
-	pip install flask-appbuilder
-	git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
+Quick start::
 
-- Run it::
+    pip install -r requirements.txt
+    python run.py  # http://localhost:5000
 
-    $ export FLASK_APP=app
-    # Create an admin user
-    $ flask fab create-admin
-    # Run dev server
-    $ flask run
+Run tests::
 
-
-That's it!!
+    python -m unittest -v
