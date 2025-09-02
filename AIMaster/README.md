@@ -196,8 +196,9 @@ curl "http://localhost:5000/api/decks?token=token-<id>-<ts>"
   - Side effects: writes a static file at `/static/actuar/<username>.html` containing the latest text.
   - Response includes the public static URL.
 - GET `/api/actuar/<username>` (public): Returns the latest text for `username` in JSON.
+  - Accepts either the full email (e.g. `alice@example.com`), the stored FAB username, or just the email local-part (e.g. `alice`).
   - Response: `{ "username": "...", "text": "...", "updated_at": "..." }`
-  - The static HTML is served from `/static/actuar/<username>.html`.
+  - The static HTML is served from `/static/actuar/<username>.html` where `<username>` is the sanitized email local-part.
 
 ### Actuar Usage Example
 
@@ -235,6 +236,8 @@ only, restricted to [a-z0-9_-]. For example, `alice@example.com` becomes
 
 ```
 curl -s http://localhost:5000/api/actuar/alice@example.com
+# or using the email local-part
+curl -s http://localhost:5000/api/actuar/alice
 ```
 
 5) Public static HTML access (no auth):
@@ -287,3 +290,62 @@ python -m unittest -v
 ```
 
 - Note: The RN CORS tester includes the Actuar flow end-to-end (POST `/api/actuar`, public JSON, and static HTML checks), so you can validate it alongside the rest of the RN/API scenarios.
+
+## Actuar2 (Batch Items)
+
+Two-phase API to pre-register a list of strings, then publish a separate public HTML for each item. Each generated HTML is named using `user_string` where `user` is your sanitized username (email local-part) and `string` is the sanitized item from your list. Sanitization keeps only lowercase letters, digits, `-` and `_`.
+
+### 1) POST `/api/actuar2/init`
+- Auth: required
+- Body: `{ "values": [string, ...] }` (aliases: `list`, `strings`)
+- 200: `{ "success": true, "values": [string, ...] }` (sanitized)
+- 400: `{ "error": string }`
+
+Use this to register which items you plan to publish. Stored in-memory per user and cleared on server restart.
+
+Example:
+
+```
+curl -s -X POST http://localhost:5000/api/actuar2/init \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: ${TOKEN}" \
+  -d '{"values":["First Show","Second-Show","Final_Show"]}'
+```
+
+Response (sanitized):
+
+```
+{
+  "success": true,
+  "values": ["final_show", "first_show", "second-show"]
+}
+```
+
+### 2) POST `/api/actuar2`
+- Auth: required
+- Body: `{ "value": string, "text": string }`
+  - `value` aliases accepted: `string`, `item`, `key`
+- 200: `{ "success": true, "value": string, "static": { "url": string } }`
+- 400: `{ "error": "value and text are required" | "value not initialized for user. Call /api/actuar2/init first." }`
+- 500: `{ "error": string }`
+
+Writes a static HTML to `/static/actuar/<user>_<value>.html`, where `<user>` is derived from your email local-part.
+
+Example:
+
+```
+curl -s -X POST http://localhost:5000/api/actuar2 \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: ${TOKEN}" \
+  -d '{"value":"first_show","text":"Opening night notes..."}'
+```
+
+Response:
+
+```
+{
+  "success": true,
+  "value": "first_show",
+  "static": { "url": "/static/actuar/alice_first_show.html" }
+}
+```

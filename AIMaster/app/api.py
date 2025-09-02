@@ -443,15 +443,113 @@ def post_actuar():
 @bp.route('/actuar/<path:username>', methods=['GET'])
 def get_actuar_public(username):
     # Public endpoint: return latest actuar text for given username
+    # Accepts: full email, stored username, or email local-part (pre-@)
     if not username:
         return jsonify({'error': 'username required'}), 400
-    user = db.session.query(UserModel).filter_by(username=username).first()
+
+    q = (username or '').strip()
+    if not q:
+        return jsonify({'error': 'username required'}), 400
+
+    from sqlalchemy import func
+
+    user = None
+    try:
+        # 1) Exact match on email (case-insensitive)
+        user = (
+            db.session.query(UserModel)
+            .filter(func.lower(UserModel.email) == q.lower())
+            .first()
+        )
+    except Exception:
+        user = None
+
     if not user:
-        # Try by email if username didn't match
-        user = db.session.query(UserModel).filter_by(email=username).first()
+        try:
+            # 2) Exact match on stored username (case-insensitive)
+            user = (
+                db.session.query(UserModel)
+                .filter(func.lower(UserModel.username) == q.lower())
+                .first()
+            )
+        except Exception:
+            user = None
+
+    if not user and '@' not in q:
+        try:
+            # 3) Match by email local-part: emails that start with '<q>@'
+            user = (
+                db.session.query(UserModel)
+                .filter(func.lower(UserModel.email).like(f"{q.lower()}@%"))
+                .first()
+            )
+        except Exception:
+            user = None
+
     if not user:
         return jsonify({'error': 'user not found'}), 404
+
     row = db.session.query(Actuar).filter_by(user_id=user.id).first()
     if not row:
         return jsonify({'username': username, 'text': None, 'updated_at': None}), 200
+    # Echo the identifier the client requested for clarity
     return jsonify(row.to_dict(username=username)), 200
+
+# --- Actuar2 endpoints ---
+# Two-phase flow:
+# 1) POST /api/actuar2/init { values: ["a", "b", ...] }
+#    Stores the list for the current user in-memory for this server process.
+# 2) POST /api/actuar2 { value: "a", text: "..." }
+#    Validates that value is one of the initialized entries and writes a static HTML
+#    using the filename pattern: "<sanitized_user>_<sanitized_value>.html" in
+#    the same static/actuar directory used by /actuar.
+
+# In-memory store of initialized values per user_id
+ACTUAR2_VALUES = {}
+
+def _sanitize_token(s: str) -> str:
+    return ''.join(c for c in (s or '').lower() if (c.isalnum() or c in '-_'))
+
+@bp.route('/actuar2/init', methods=['POST'])
+@require_user
+def actuar2_init():
+    data = request.get_json(silent=True) or {}
+    values = data.get('values') or data.get('list') or data.get('strings')
+    if not isinstance(values, list) or not values:
+        return jsonify({'error': 'values must be a non-empty list of strings'}), 400
+    cleaned = []
+    for v in values:
+        if not isinstance(v, str):
+            return jsonify({'error': 'all values must be strings'}), 400
+        sv = _sanitize_token(v)
+        if not sv:
+            return jsonify({'error': f'invalid value: {v}'}), 400
+        cleaned.append(sv)
+    ACTUAR2_VALUES[request.current_user.id] = set(cleaned)
+    return jsonify({'success': True, 'values': sorted(ACTUAR2_VALUES[request.current_user.id])}), 200
+
+@bp.route('/actuar2', methods=['POST'])
+@require_user
+def actuar2_post():
+    data = request.get_json(silent=True) or {}
+    # Accept several keys for flexibility
+    value = data.get('value') or data.get('string') or data.get('item') or data.get('key')
+    text = data.get('text')
+    if text is None:
+        text = request.form.get('text')
+    if not isinstance(value, str) or text is None:
+        return jsonify({'error': 'value and text are required'}), 400
+    sv = _sanitize_token(value)
+    if not sv:
+        return jsonify({'error': 'value must include letters, digits, dash or underscore'}), 400
+    allowed = ACTUAR2_VALUES.get(request.current_user.id)
+    if not allowed or sv not in allowed:
+        return jsonify({'error': 'value not initialized for user. Call /api/actuar2/init first.'}), 400
+
+    # Build combined filename user_string
+    san_user = _derive_sanitized_username(request.current_user)
+    combined = f"{san_user}_{sv}"
+    urls = _write_actuar_static(combined, str(text))
+    if 'error' in urls:
+        return jsonify({'error': urls['error']}), 500
+    return jsonify({'success': True, 'value': sv, 'static': urls}), 200
