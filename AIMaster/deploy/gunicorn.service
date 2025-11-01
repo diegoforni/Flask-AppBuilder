@@ -10,7 +10,8 @@ User=ubuntu
 Group=www-data
 WorkingDirectory=/home/ubuntu/Flask-AppBuilder/AIMaster
 # Using system python3 without venv
-ExecStart=/usr/bin/gunicorn --workers 3 --bind 0.0.0.0:5000 app:app
+# NOTE: Running with 1 worker due to in-memory SESSIONS dict
+ExecStart=/usr/bin/gunicorn --workers 1 --bind 0.0.0.0:5000 app:app
 
 [Install]
 WantedBy=multi-user.target
