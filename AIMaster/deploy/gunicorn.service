@@ -1,0 +1,16 @@
+# Systemd unit file for running gunicorn serving this Flask app
+# Copy this to /etc/systemd/system/gunicorn-flaskapp.service and edit User and Group as appropriate.
+
+[Unit]
+Description=Gunicorn instance to serve Flask App
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/Flask-AppBuilder/AIMaster
+# Using system python3 without venv
+ExecStart=/usr/bin/gunicorn --workers 3 --bind 0.0.0.0:5000 app:app
+
+[Install]
+WantedBy=multi-user.target

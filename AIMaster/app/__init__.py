@@ -2,7 +2,8 @@ import logging
 
 from flask import Flask
 from flask_cors import CORS
-from flask_appbuilder import AppBuilder, SQLA
+from flask_appbuilder import AppBuilder
+from flask_appbuilder.models.sqla import SQLA
 
 """
  Logging configuration
